@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#f7efe2">
+  <title>2026 한국해양대학교 가을 대동제 초청장</title>
+  <meta name="description" content="낭만 가득한 바다와 가을 노을이 머무는 한국해양대학교 2026 가을 대동제에 초대합니다. (10.28~10.29)">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Gowun+Batang:wght@400;700&family=Pretendard:wght@400;500;600;700;800&family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons & Canvas Confetti -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Falling Leaves Canvas -->
+  <canvas id="leavesCanvas"></canvas>
+
+  <!-- =========================================================================
+       0. Interactive Opening Envelope / Invitation Modal Animation
+       ========================================================================= -->
+  <div id="envelopeOverlay" class="envelope-overlay">
+    <div class="envelope-modal">
+      <div class="envelope-box" id="envelopeBox">
+        <div class="envelope-flap" id="envelopeFlap"></div>
+        <div class="envelope-pocket"></div>
+        
+        <!-- Wax Seal Stamp -->
+        <div class="wax-seal" id="waxSeal">
+          <div class="seal-inner">
+            <span>KMOU</span>
+            <small>2026</small>
+          </div>
+        </div>
+
+        <!-- Peeking Letter Paper -->
+        <div class="letter-paper" id="letterPaper">
+          <div class="letter-badge">🍁 가을 대동제 초청장</div>
+          <h3 class="letter-heading font-serif">바다와 낭만이 머무는 아치로<br>당신을 초대합니다</h3>
+          <p class="letter-date">2026. 10. 28(수) ~ 10. 29(목)</p>
+          <span class="letter-tap-hint">터치하여 초청장 열기 ✨</span>
+        </div>
+      </div>
+      
+      <p class="envelope-guide-text">봉투의 실링 왁스를 터치하여 초청장을 열어보세요 💌</p>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Main Application Container
+       ========================================================================= -->
+  <div class="mobile-wrapper" id="mainApp">
+    <div class="app-card">
+
+      <!-- Top Header Bar -->
+      <header class="top-bar">
+        <div class="header-logo">
+          <span class="leaf-icon">🍁</span>
+          <span class="logo-title">2026 한국해양대 가을 대동제</span>
+        </div>
+        <div class="top-actions">
+          <button id="reopenEnvelopeBtn" class="top-btn-icon" title="초대장 봉투 다시보기">
+            <i data-lucide="mail"></i>
+          </button>
+          <button id="shareLinkBtn" class="top-btn-icon" title="초대장 공유하기">
+            <i data-lucide="share-2"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- 1. Main Hero Invitation Section -->
+      <section class="hero-section">
+        <div class="hero-badge">
+          <span>🍂 2026 ARCHI OCEAN FESTIVAL</span>
+        </div>
+
+        <h1 class="hero-title">
+          <span class="sub-phrase font-serif">가을 바다의 노을, 그리고 우리들의 낭만</span>
+          <span class="main-phrase">아치 가을 대동제</span>
+        </h1>
+
+        <!-- Date & Location Simple Info -->
+        <div class="hero-summary-box">
+          <div class="sum-row">
+            <span class="sum-label"><i data-lucide="calendar"></i> 축제 일시</span>
+            <span class="sum-val">2026. 10. 28 (수) ~ 10. 29 (목)</span>
+          </div>
+          <div class="sum-row">
+            <span class="sum-label"><i data-lucide="map-pin"></i> 축제 장소</span>
+            <span class="sum-val">한국해양대학교 아치캠퍼스 대운동장</span>
+          </div>
+          <div class="sum-row">
+            <span class="sum-label"><i data-lucide="heart"></i> 주최/주관</span>
+            <span class="sum-val">한국해양대학교 총학생회 [하랑]</span>
+          </div>
+        </div>
+
+        <!-- Real-time D-Day Countdown -->
+        <div class="countdown-wrap">
+          <div class="countdown-title">
+            <i data-lucide="clock"></i> <span>축제 개막까지 남은 시간</span>
+          </div>
+          <div class="timer-display">
+            <div class="time-block">
+              <span id="days" class="time-val">00</span>
+              <span class="time-txt">일</span>
+            </div>
+            <span class="time-colon">:</span>
+            <div class="time-block">
+              <span id="hours" class="time-val">00</span>
+              <span class="time-txt">시</span>
+            </div>
+            <span class="time-colon">:</span>
+            <div class="time-block">
+              <span id="mins" class="time-val">00</span>
+              <span class="time-txt">분</span>
+            </div>
+            <span class="time-colon">:</span>
+            <div class="time-block">
+              <span id="secs" class="time-val">00</span>
+              <span class="time-txt">초</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-time Seats Capacity Card with Refresh Button (Max 1,000) -->
+        <div class="seat-capacity-card">
+          <div class="seat-header">
+            <div class="seat-title-wrap">
+              <span class="seat-title"><i data-lucide="users"></i> 실시간 잔여석 현황</span>
+              <span class="seat-status-badge">선착순 1,000명</span>
+            </div>
+            <!-- Refresh Seats Button -->
+            <button id="refreshSeatsBtn" class="btn-refresh-seat" title="잔여석 새로고침">
+              <i data-lucide="refresh-cw" id="refreshIcon"></i>
+              <span>새로고침</span>
+            </button>
+          </div>
+
+          <div class="seat-bar-bg">
+            <div id="seatFillBar" class="seat-bar-fill" style="width: 86.4%;"></div>
+          </div>
+
+          <div class="seat-footer">
+            <span class="seat-count">현재 예약: <strong id="currentReservedCount">864</strong>명 / 1,000명</span>
+            <span class="seat-remain">잔여 <strong id="remainSeatsCount">136</strong>석</span>
+          </div>
+          <p class="seat-tip">※ 새로고침 버튼을 누르면 실시간 잔여석 정보가 즉시 갱신됩니다.</p>
+        </div>
+      </section>
+
+      <!-- 2. Warm Artist Lineup Section -->
+      <section class="section-container" id="lineupSection">
+        <div class="section-head">
+          <span class="section-tag">LINE UP</span>
+          <h2 class="section-main-title">2026 초청 아티스트</h2>
+          <p class="section-sub">가을 바다와 함께 즐기는 낭만적인 라이브 무대</p>
+        </div>
+
+        <!-- Day Selector -->
+        <div class="day-tab-container">
+          <button class="day-tab-btn active" data-day="day1">
+            <strong>DAY 1</strong>
+            <span>10.28 (수)</span>
+          </button>
+          <button class="day-tab-btn" data-day="day2">
+            <strong>DAY 2</strong>
+            <span>10.29 (목)</span>
+          </button>
+        </div>
+
+        <!-- Day 1 Lineup List -->
+        <div id="day1List" class="lineup-list active">
+          <div class="warm-artist-card">
+            <div class="artist-badge-tag">헤드라이너</div>
+            <div class="artist-content">
+              <div class="artist-text">
+                <h3 class="artist-title">NewJeans (뉴진스)</h3>
+                <p class="artist-schedule"><i data-lucide="clock"></i> 21:20 ~ 22:00 메인 스테이지</p>
+                <p class="artist-intro">청량한 가을 바다와 함께하는 역대급 청춘 무대</p>
+                <div class="song-tags"><span>#Ditto</span> <span>#Hype Boy</span> <span>#Supernatural</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="warm-artist-card">
+            <div class="artist-badge-tag indie">감성 보컬</div>
+            <div class="artist-content">
+              <div class="artist-text">
+                <h3 class="artist-title">10CM (십센치)</h3>
+                <p class="artist-schedule"><i data-lucide="clock"></i> 20:30 ~ 21:10 메인 스테이지</p>
+                <p class="artist-intro">가을 노을빛과 가장 어울리는 감미로운 기타와 보컬</p>
+                <div class="song-tags"><span>#그라데이션</span> <span>#스토커</span> <span>#폰서트</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="warm-artist-card">
+            <div class="artist-badge-tag band">청춘 밴드</div>
+            <div class="artist-content">
+              <div class="artist-text">
+                <h3 class="artist-title">QWER (큐더블유이알)</h3>
+                <p class="artist-schedule"><i data-lucide="clock"></i> 19:40 ~ 20:20 메인 스테이지</p>
+                <p class="artist-intro">폭발적인 에너지로 캠퍼스를 뜨겁게 달굴 걸밴드</p>
+                <div class="song-tags"><span>#고민중독</span> <span>#Discord</span> <span>#내이름맑음</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Day 2 Lineup List -->
+        <div id="day2List" class="lineup-list">
+          <div class="warm-artist-card special">
+            <div class="artist-badge-tag special">피날레</div>
+            <div class="artist-content">
+              <div class="artist-text">
+                <h3 class="artist-title">아이유 (IU)</h3>
+                <p class="artist-schedule"><i data-lucide="clock"></i> 21:30 ~ 22:30 메인 스테이지</p>
+                <p class="artist-intro">가을 대동제의 마지막 밤을 가득 채울 따스한 감동의 노래</p>
+                <div class="song-tags"><span>#밤편지</span> <span>#너의의미</span> <span>#Love wins all</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="warm-artist-card">
+            <div class="artist-badge-tag rock">낭만 록</div>
+            <div class="artist-content">
+              <div class="artist-text">
+                <h3 class="artist-title">잔나비 (JANNABI)</h3>
+                <p class="artist-schedule"><i data-lucide="clock"></i> 20:30 ~ 21:20 메인 스테이지</p>
+                <p class="artist-intro">영도 바닷바람과 함께 떼창하는 뜨거운 청춘의 찬가</p>
+                <div class="song-tags"><span>#주저하는연인들을위해</span> <span>#뜨거운여름밤은가고</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="warm-artist-card">
+            <div class="artist-badge-tag hiphop">열정 힙합</div>
+            <div class="artist-content">
+              <div class="artist-text">
+                <h3 class="artist-title">다이나믹 듀오 (Dynamic Duo)</h3>
+                <p class="artist-schedule"><i data-lucide="clock"></i> 19:40 ~ 20:20 메인 스테이지</p>
+                <p class="artist-intro">전 관객이 하나 되어 뛰노는 에너제틱 힙합 스테이지</p>
+                <div class="song-tags"><span>#Smoke</span> <span>#죽일놈</span> <span>#불꽃놀이</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Student Verification & Referral Code Generation Section -->
+      <section class="section-container" id="studentAuthSection">
+        <div class="section-head">
+          <span class="section-tag student">KMOU VERIFY</span>
+          <h2 class="section-main-title">한국해양대 재학생 인증 & 추천코드</h2>
+          <p class="section-sub">재학생 인증을 완료하면 고유 추천인 코드가 발급되며 친구에게 공유할 수 있습니다.</p>
+        </div>
+
+        <div class="warm-form-card" id="studentVerifyBox">
+          <div class="auth-header-pill">
+            <i data-lucide="shield-check"></i>
+            <span>재학생 간편 인증 (학번 / 학과)</span>
+          </div>
+
+          <form id="studentAuthForm">
+            <div class="input-field">
+              <label for="stuName">이름 <span class="req">*</span></label>
+              <input type="text" id="stuName" placeholder="예: 홍길동" required>
+            </div>
+
+            <div class="input-field">
+              <label for="stuId">학번 (8자리) <span class="req">*</span></label>
+              <input type="text" id="stuId" placeholder="예: 20241234" maxlength="10" required>
+            </div>
+
+            <div class="input-field">
+              <label for="stuDept">소속 단과대 / 학과 <span class="req">*</span></label>
+              <select id="stuDept" required>
+                <option value="" disabled selected>학부/학과를 선택해주세요</option>
+                <option value="해사대학">해사대학 (항해학부, 기관시스템공학부 등)</option>
+                <option value="해양과학기술융합대학">해양과학기술융합대학 (해양공학과, 전자전기 등)</option>
+                <option value="해양인문사회과학대학">해양인문사회과학대학 (해운경영학부, 국제무역 등)</option>
+                <option value="일반대학원">대학원 / 연구원</option>
+              </select>
+            </div>
+
+            <button type="submit" id="btnStudentAuth" class="warm-btn primary">
+              <i data-lucide="badge-check"></i> 재학생 인증하고 추천코드 발급
+            </button>
+          </form>
+        </div>
+
+        <div id="verifiedResultBox" class="student-verified-card hidden">
+          <div class="verified-badge-top">
+            <i data-lucide="check-circle-2"></i> 한국해양대학교 재학생 인증 완료
+          </div>
+          
+          <div class="verified-user-detail">
+            <strong id="authStudentName">홍길동</strong> 학생님 (<span id="authStudentDept">해사대학</span>)
+          </div>
+
+          <div class="shareable-ref-box">
+            <span class="ref-box-label">나의 공식 추천인 코드 (최대 2명 추천 가능)</span>
+            <div class="ref-code-line">
+              <strong id="studentGeneratedRefCode">KMOU-20241234</strong>
+            </div>
+            <div class="ref-share-btns">
+              <button id="btnCopyMyRef" class="btn-action-ref copy">
+                <i data-lucide="copy"></i> 코드 복사
+              </button>
+              <button id="btnShareMyRef" class="btn-action-ref share">
+                <i data-lucide="share-2"></i> 친구에게 공유하기
+              </button>
+            </div>
+            <div class="ref-invited-stat">
+              <span>내 코드로 등록한 친구: <strong id="studentInviteCount">0</strong> / 2명</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Dynamic Real-time Lottery Section (Without Replacement Draw) -->
+      <section class="section-container" id="lotterySection">
+        <div class="section-head">
+          <span class="section-tag prize">DYNAMIC LUCKY DRAW</span>
+          <h2 class="section-main-title">실시간 번호표 추첨함 (비복원 추첨)</h2>
+          <p class="section-sub">표를 뽑을 때마다 전체 표가 줄어들며, <strong>꽝이 나올수록 실시간 당첨 확률이 상승</strong>합니다!</p>
+        </div>
+
+        <div class="pool-status-card">
+          <div class="pool-stat-row">
+            <div class="stat-box">
+              <span class="stat-lbl"><i data-lucide="ticket"></i> 남은 전체 추첨표</span>
+              <strong class="stat-num" id="remainTotalTickets">1,000</strong>
+              <span class="stat-sub">/ 1,000장</span>
+            </div>
+            <div class="stat-box highlight">
+              <span class="stat-lbl"><i data-lucide="trending-up"></i> 현재 당첨 확률</span>
+              <strong class="stat-num rate" id="currentWinRate">1.50%</strong>
+              <span class="stat-sub" id="winRateComment">꽝 발생 시 실시간 상승 📈</span>
+            </div>
+          </div>
+          
+          <div class="pool-bar-bg">
+            <div id="poolBarFill" class="pool-bar-fill" style="width: 100%;"></div>
+          </div>
+          <div class="pool-sub-desc">
+            <span>총 당첨표 <strong id="remainPrizeTotal">15</strong>장 / 꽝 <strong id="remainMissCount">985</strong>장 남음</span>
+          </div>
+        </div>
+
+        <div class="prize-table-card">
+          <div class="prize-table-header">
+            <span>🎁 경품별 실시간 잔여 수량</span>
+            <span class="prob-tag" id="prizeProbTag">실시간 추첨 중</span>
+          </div>
+
+          <div class="prize-item-row rank-1">
+            <div class="p-badge gold">1등</div>
+            <div class="p-name">현대 자동차 (캐스퍼 The New)</div>
+            <div class="p-limit"><strong>1명</strong> (남은수량: <span id="remainP1">1</span>개)</div>
+          </div>
+          <div class="prize-item-row rank-2">
+            <div class="p-badge silver">2등</div>
+            <div class="p-name">LG 스탠바이미 스마트 가전</div>
+            <div class="p-limit"><strong>2명</strong> (남은수량: <span id="remainP2">2</span>개)</div>
+          </div>
+          <div class="prize-item-row rank-3">
+            <div class="p-badge bronze">3등</div>
+            <div class="p-name">Apple M3 맥북 에어</div>
+            <div class="p-limit"><strong>3명</strong> (남은수량: <span id="remainP3">3</span>개)</div>
+          </div>
+          <div class="prize-item-row">
+            <div class="p-badge">4등</div>
+            <div class="p-name">에어팟 프로 2세대</div>
+            <div class="p-limit"><strong>4명</strong> (남은수량: <span id="remainP4">4</span>개)</div>
+          </div>
+          <div class="prize-item-row">
+            <div class="p-badge">5등</div>
+            <div class="p-name">스타벅스 3만원 모바일권</div>
+            <div class="p-limit"><strong>5명</strong> (남은수량: <span id="remainP5">5</span>개)</div>
+          </div>
+
+          <div class="admin-reset-wrap">
+            <button id="btnAdminResetPrizes" class="btn-admin-reset">
+              <i data-lucide="rotate-ccw"></i> <span>[관리자] 1,000장 전체 표 & 경품 수량 완전 초기화 (리셋)</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="lottery-box">
+          <div class="ticket-slip">
+            <span class="slip-label">추첨함에서 번호표 뽑기</span>
+            <div class="ticket-numbers-row">
+              <span class="prefix">KMOU-</span>
+              <span class="num-box" id="slotNum1">?</span>
+              <span class="num-box" id="slotNum2">?</span>
+              <span class="num-box" id="slotNum3">?</span>
+              <span class="num-box" id="slotNum4">?</span>
+            </div>
+          </div>
+
+          <button id="drawPrizeBtn" class="warm-btn primary">
+            <i data-lucide="sparkles"></i> 번호표 1장 뽑기 (표 차감 & 확률 상승)
+          </button>
+
+          <div id="lotteryResultCard" class="lottery-result hidden">
+            <div class="res-icon" id="resIcon">🎉</div>
+            <h4 class="res-title" id="resTitle">결과 확인</h4>
+            <p class="res-desc" id="resDesc">결과 내용이 여기에 표시됩니다.</p>
+            <div class="res-rate-boost hidden" id="rateBoostNotice">
+              <i data-lucide="arrow-up-right"></i> <span>꽝 1장이 빠져나가 다음 뽑기 당첨 확률이 상승했습니다!</span>
+            </div>
+            <div class="res-code-box">
+              <span>내 추첨 번호표 : </span><strong id="myLotteryCode">KMOU-0000</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           🌟 NEW: 5. Lovely Autumn Random Blind Date (가을 축제 랜덤 소개팅)
+           ===================================================================== -->
+      <section class="section-container love-section" id="blindDateSection">
+        <div class="section-head">
+          <span class="section-tag love">FALL IN LOVE 💘</span>
+          <h2 class="section-main-title">가을 바다 랜덤 소개팅 💕</h2>
+          <p class="section-sub">인스타는 인스타끼리, 번호는 번호끼리! 축제에서 시작되는 설레는 인연</p>
+        </div>
+
+        <!-- Lovely Blind Date Form Card -->
+        <div class="love-form-card" id="loveFormCard">
+          <div class="love-card-header">
+            <div class="heart-pulse-icon">💖</div>
+            <div class="love-header-text">
+              <strong>두근두근 1:1 시크릿 매칭</strong>
+              <span>연락처 유형(인스타/전화번호)에 맞춰 매칭됩니다</span>
+            </div>
+          </div>
+
+          <form id="blindDateForm">
+            <!-- Nickname & Gender -->
+            <div class="input-field">
+              <label for="loveNick">닉네임 / 이름 <span class="req">*</span></label>
+              <input type="text" id="loveNick" placeholder="예: 바다소년 or 낭만소녀" required>
+            </div>
+
+            <div class="love-grid-row">
+              <div class="input-field">
+                <label>내 성별 <span class="req">*</span></label>
+                <select id="loveGender" required>
+                  <option value="M" selected>남성 🙋‍♂️</option>
+                  <option value="F">여성 🙋‍♀️</option>
+                </select>
+              </div>
+              <div class="input-field">
+                <label>희망 상대 <span class="req">*</span></label>
+                <select id="loveTargetGender" required>
+                  <option value="F" selected>여성 매칭 🎀</option>
+                  <option value="M">남성 매칭 👔</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Contact Type Toggle (인스타 vs 전화번호 택1) -->
+            <div class="input-field">
+              <label><i data-lucide="heart-handshake"></i> 매칭 연락 수단 선택 (택 1) <span class="req">*</span></label>
+              <div class="love-pill-group">
+                <label class="love-pill">
+                  <input type="radio" name="contactType" value="insta" checked>
+                  <span><i data-lucide="instagram"></i> 인스타그램 ID</span>
+                </label>
+                <label class="love-pill">
+                  <input type="radio" name="contactType" value="phone">
+                  <span><i data-lucide="phone"></i> 휴대폰 번호</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Dynamic Input depending on Contact Type -->
+            <div class="input-field" id="contactInputWrap">
+              <label for="loveContact" id="loveContactLabel">내 인스타그램 아이디 <span class="req">*</span></label>
+              <input type="text" id="loveContact" placeholder="예: @my_instagram_id" required>
+              <p class="love-contact-hint" id="loveContactHint">인스타를 선택하시면 인스타 사용자끼리 매칭됩니다.</p>
+            </div>
+
+            <div class="input-field">
+              <label for="loveIntro">한 줄 자기소개 & 취향 <span class="req">*</span></label>
+              <input type="text" id="loveIntro" placeholder="예: 축제에서 잔나비 떼창 같이 부를 친구 구해요! (ENFP)" required maxlength="40">
+            </div>
+
+            <button type="submit" id="btnMatchLove" class="warm-btn love-btn pulse-love">
+              <span>💘 두근두근 즉석 랜덤 매칭하기</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Matched Result Card (Karina or Phone Match Example) -->
+        <div id="loveMatchedCard" class="love-result-card hidden">
+          <div class="match-success-badge">
+            <span class="match-heart">💖</span>
+            <strong>1:1 매칭 성공! 낭만의 짝을 찾았습니다</strong>
+          </div>
+
+          <div class="matched-profile-box">
+            <div class="matched-avatar" id="matchedAvatar">✨</div>
+            <div class="matched-profile-info">
+              <div class="match-title-row">
+                <h4 class="matched-name" id="matchedName">카리나 (Karina)</h4>
+                <span class="matched-dept-tag" id="matchedDept">해사대학</span>
+              </div>
+              <p class="matched-intro-text" id="matchedIntro">"가을 바다 노을 보면서 같이 페스티벌 즐겨요! 🫧"</p>
+              
+              <!-- Matched Contact Display -->
+              <div class="matched-contact-box">
+                <span class="c-label" id="matchedContactLabel">상대방 인스타그램</span>
+                <strong class="c-val" id="matchedContactVal">@katarinabluu</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="matched-action-btns">
+            <a id="btnConnectDirect" href="https://instagram.com/katarinabluu" target="_blank" class="btn-love-action connect">
+              <i data-lucide="send"></i> <span id="connectBtnText">인스타 DM으로 인사하기</span>
+            </a>
+            <button id="btnRematchLove" class="btn-love-action rematch">
+              <i data-lucide="rotate-ccw"></i> 다른 인연 찾기
+            </button>
+          </div>
+          <p class="love-warning-text">※ 매칭된 상대방에게도 나의 연락처가 전달되어 서로 연락할 수 있습니다.</p>
+        </div>
+      </section>
+
+      <!-- 6. RSVP Section -->
+      <section class="section-container" id="rsvpSection">
+        <div class="section-head">
+          <span class="section-tag rsvp">RSVP</span>
+          <h2 class="section-main-title">축제 참석 사전 신청</h2>
+          <p class="section-sub">사전 신청자에게 모바일 초대 티켓이 즉시 발급됩니다.</p>
+        </div>
+
+        <div class="warm-form-card">
+          <form id="festRsvpForm">
+            <div class="input-field">
+              <label for="regName">참석자 성함 <span class="req">*</span></label>
+              <input type="text" id="regName" placeholder="성함을 입력해주세요" required>
+            </div>
+
+            <div class="input-field">
+              <label for="regPhone">연락처 <span class="req">*</span></label>
+              <input type="tel" id="regPhone" placeholder="010-0000-0000" required>
+            </div>
+
+            <div class="input-field">
+              <label>참석 예정일 <span class="req">*</span></label>
+              <div class="pill-options">
+                <label class="pill-label">
+                  <input type="radio" name="festDay" value="DAY 1 (10.28 수)" checked>
+                  <span>10.28(수)</span>
+                </label>
+                <label class="pill-label">
+                  <input type="radio" name="festDay" value="DAY 2 (10.29 목)">
+                  <span>10.29(목)</span>
+                </label>
+                <label class="pill-label">
+                  <input type="radio" name="festDay" value="양일 모두 참석">
+                  <span>양일 모두</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="input-field referral-highlight">
+              <label for="referralInput">
+                <i data-lucide="gift"></i> 재학생 추천인 코드 (선택)
+              </label>
+              <div class="referral-input-row">
+                <input type="text" id="referralInput" placeholder="예: KMOU-20241234" maxlength="18">
+                <button type="button" id="applyReferralBtn" class="btn-check-code">적용</button>
+              </div>
+              <p class="ref-hint" id="refHintText">재학생 친구의 추천인 코드를 입력하면 실시간 예약 인원에 반영됩니다!</p>
+            </div>
+
+            <button type="submit" id="submitBtn" class="warm-btn submit">
+              <i data-lucide="check"></i> 참석 신청 완료 & 모바일 티켓 발급
+            </button>
+          </form>
+        </div>
+
+        <div id="issuedTicket" class="vintage-ticket-wrap hidden">
+          <div class="ticket-stamp">INVITATION</div>
+          <div class="ticket-header-inner">
+            <span class="ticket-fest-name">2026 한국해양대학교 가을축제</span>
+            <span class="ticket-pass-badge">입장 확정</span>
+          </div>
+
+          <div class="ticket-dashed-line"></div>
+
+          <div class="ticket-info-grid">
+            <div class="t-item">
+              <span class="k">참석자</span>
+              <strong class="v" id="tName">홍길동 님</strong>
+            </div>
+            <div class="t-item">
+              <span class="k">일정</span>
+              <strong class="v" id="tDay">양일 모두 참석</strong>
+            </div>
+            <div class="t-item full">
+              <span class="k">내 경품 추첨 번호표</span>
+              <strong class="v highlight" id="tLuckyNum">KMOU-4821</strong>
+            </div>
+          </div>
+
+          <div class="ticket-bottom-note">
+            <span>축제 당일 본부석에서 이 모바일 티켓을 제시해주세요 🍁</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           🌟 NEW: 7. FAQ (자주 묻는 질문) Section
+           ===================================================================== -->
+      <section class="section-container" id="faqSection">
+        <div class="section-head">
+          <span class="section-tag faq">FAQ</span>
+          <h2 class="section-main-title">자주 묻는 질문</h2>
+          <p class="section-sub">축제 관람에 대해 궁금하신 점을 빠르게 해결해 드립니다.</p>
+        </div>
+
+        <div class="faq-accordion-list">
+          <details class="faq-item" open>
+            <summary>
+              <span>Q. 타 대학생이나 일반 시민도 입장이 가능한가요?</span>
+              <i data-lucide="chevron-down" class="faq-chevron"></i>
+            </summary>
+            <div class="faq-content">
+              <strong>네, 전면 무료로 누구나 입장 가능합니다!</strong><br>
+              2026 한국해양대학교 가을 대동제는 모든 시민과 타대생이 함께하는 열린 축제입니다. 모바일 초청장만 소지하시면 누구나 공연과 푸드트럭, 불꽃축제를 즐기실 수 있습니다.
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <span>Q. 1등 자동차 및 맥북 경품 추첨은 언제 하나요?</span>
+              <i data-lucide="chevron-down" class="faq-chevron"></i>
+            </summary>
+            <div class="faq-content">
+              공식 경품 추첨은 <strong>10월 29일(목) 22:15 대운동장 메인 무대</strong>에서 진행됩니다. 모바일 추첨 번호표를 받으신 분 중 현장에 계신 분께 우선 수여됩니다.
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <span>Q. 셔틀버스와 주차는 무료인가요?</span>
+              <i data-lucide="chevron-down" class="faq-chevron"></i>
+            </summary>
+            <div class="faq-content">
+              <strong>네, 모두 무료입니다!</strong><br>
+              부산역(1번출구) 및 남포역(6번출구)에서 15분 간격으로 무료 셔틀이 운행되며, 자차 이용 시 교내 약 1,000대 무료 주차가 가능합니다.
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <span>Q. 우천 시에도 축제 공연이 진행되나요?</span>
+              <i data-lucide="chevron-down" class="faq-chevron"></i>
+            </summary>
+            <div class="faq-content">
+              우천 시에도 정상 진행되며 종합안내소에서 축제 공식 우비를 무료 배포합니다. 기상 악화 시 실내 어울림관 대강당으로 안전하게 무대가 전환됩니다.
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- 8. Simple Location & Transport Section -->
+      <section class="section-container location-section">
+        <div class="section-head">
+          <span class="section-tag map">LOCATION</span>
+          <h2 class="section-main-title">축제장 오시는 길 & 교통</h2>
+          <p class="section-sub">부산 영도구 태종로 727 (한국해양대학교 아치캠퍼스)</p>
+        </div>
+
+        <div class="campus-guide-card">
+          <div class="simple-map-visual">
+            <div class="island-illust">
+              <div class="bridge-road"><span>아치교 (진입로)</span></div>
+              <div class="island-body">
+                <div class="pin main-stage">🎪 대운동장 메인무대</div>
+                <div class="pin food-zone">🍔 푸드트럭존 & 아치로드</div>
+                <div class="pin info-center">ℹ️ 종합안내소 & 셔틀승강장</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="transport-simple-list">
+            <div class="trans-item">
+              <div class="trans-icon shuttle">🚌</div>
+              <div class="trans-text">
+                <strong>무료 축제 셔틀버스 (15분 간격)</strong>
+                <p>부산역(1번출구) ↔ 남포역(6번출구) ↔ 해양대 직행 (12:00~23:30)</p>
+              </div>
+            </div>
+
+            <div class="trans-item">
+              <div class="trans-icon bus">🚍</div>
+              <div class="trans-text">
+                <strong>시내버스 190번 (교내 종점 직진입)</strong>
+                <p>부산역/남포역 탑승 → 해양대 교내 대운동장 바로 앞 하차</p>
+              </div>
+            </div>
+
+            <div class="trans-item">
+              <div class="trans-icon car">🚗</div>
+              <div class="trans-text">
+                <strong>자차 & 주차 안내</strong>
+                <p>내비에 "한국해양대학교" 검색 (축제 기간 교내 1,000대 무료 주차)</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="map-btn-row">
+            <button class="map-link-btn" onclick="window.open('https://map.naver.com/v5/search/%ED%95%9C%EA%B5%AD%ED%95%B4%EC%96%91%EB%8C%80%ED%95%99%EA%B5%90', '_blank')">
+              네이버 지도 길찾기
+            </button>
+            <button class="map-link-btn kakao" onclick="window.open('https://map.kakao.com/link/search/%ED%95%9C%EA%B5%AD%ED%95%B4%EC%96%91%EB%8C%80%ED%95%99%EA%B5%90', '_blank')">
+              카카오맵 길찾기
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="warm-footer">
+        <p class="foot-title">2026 국립 한국해양대학교 가을 대동제</p>
+        <p class="foot-sub">가을 바다의 낭만과 함께 따뜻한 추억을 만들어가세요.</p>
+        <p class="foot-copy">© 2026 KMOU Festival Committee. All rights reserved.</p>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBox" class="toast-box hidden">
+    <span id="toastText">알림 메시지</span>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
